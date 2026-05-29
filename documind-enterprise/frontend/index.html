@@ -1,0 +1,711 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DocuMind Enterprise</title>
+
+<script>
+    const isLoggedIn = localStorage.getItem("loggedIn") === "true";
+    const path = window.location.pathname.toLowerCase();
+
+    if (!isLoggedIn && (
+        path.endsWith("index.html") ||
+        path === "/" ||
+        path === "" ||
+        path.endsWith("/frontend/")
+    )) {
+        window.location.href = "login.html";
+    }
+</script>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Arial, sans-serif;
+    background:linear-gradient(135deg,#0f172a,#1e3a8a,#0f172a);
+    min-height:100vh;
+    color:white;
+    transition:0.3s;
+}
+
+/* Navbar */
+
+.navbar{
+    width:100%;
+    padding:20px 40px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:rgba(255,255,255,0.08);
+    backdrop-filter:blur(20px);
+    position:sticky;
+    top:0;
+    z-index:100;
+}
+
+.navbar h2{
+    color:white;
+    font-size:24px;
+}
+
+.navbar button{
+    background:#22d3ee;
+    border:none;
+    padding:10px 15px;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:18px;
+    transition:0.3s;
+}
+
+.navbar button:hover{
+    transform:scale(1.05);
+}
+
+/* Container */
+
+.container{
+    width:90%;
+    max-width:1200px;
+    margin:auto;
+    padding:40px 0;
+}
+
+/* Header */
+
+.header{
+    text-align:center;
+    margin-bottom:40px;
+}
+
+.header h1{
+    font-size:55px;
+    margin-bottom:10px;
+
+    background:linear-gradient(to right,#60a5fa,#22d3ee);
+    background-clip:text;
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.header p{
+    color:#cbd5e1;
+    font-size:18px;
+}
+
+/* Grid */
+
+.main{
+    display:grid;
+    grid-template-columns:1fr 2fr;
+    gap:30px;
+}
+
+@media(max-width:900px){
+    .main{
+        grid-template-columns:1fr;
+    }
+}
+
+/* Cards */
+
+.card{
+    background:rgba(255,255,255,0.08);
+    border-radius:20px;
+    padding:25px;
+    backdrop-filter:blur(15px);
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:translateY(-5px);
+    box-shadow:0 15px 30px rgba(0,0,0,0.3);
+}
+
+/* Upload */
+
+.upload-box{
+    border:2px dashed rgba(255,255,255,0.3);
+    padding:40px;
+    text-align:center;
+    border-radius:20px;
+}
+
+/* Inputs */
+
+input{
+    width:100%;
+    padding:15px;
+    border:none;
+    border-radius:12px;
+    margin-top:15px;
+    margin-bottom:15px;
+    background:rgba(255,255,255,0.1);
+    color:white;
+    outline:none;
+}
+
+input::placeholder{
+    color:#cbd5e1;
+}
+
+/* Buttons */
+
+button{
+    padding:12px 20px;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+    font-size:16px;
+    font-weight:bold;
+    transition:0.3s;
+}
+
+button:hover{
+    transform:scale(1.03);
+}
+
+.upload-btn{
+    background:#06b6d4;
+    color:white;
+    width:100%;
+    margin-bottom:10px;
+}
+
+.ask-btn{
+    background:#22c55e;
+    color:white;
+}
+
+/* Chat */
+
+.chat-box{
+    min-height:350px;
+    max-height:650px;
+    overflow-y:auto;
+    background:rgba(0,0,0,0.2);
+    border-radius:20px;
+    padding:20px;
+    margin-bottom:20px;
+}
+
+/* Chat History */
+
+#chatHistory{
+    max-height:300px;
+    overflow-y:auto;
+    margin-bottom:20px;
+    padding-right:10px;
+}
+
+.chat-card{
+    background:rgba(255,255,255,0.05);
+    padding:20px;
+    border-radius:15px;
+    margin-bottom:15px;
+    border:1px solid rgba(255,255,255,0.08);
+}
+
+.user-msg{
+    margin-bottom:15px;
+}
+
+.ai-msg{
+    background:rgba(34,197,94,0.08);
+    padding:12px;
+    border-radius:10px;
+}
+
+/* Response */
+
+.response-box{
+    background:rgba(59,130,246,0.15);
+    padding:20px;
+    border-radius:15px;
+    margin-bottom:20px;
+}
+
+/* Source */
+
+.source-box{
+    background:rgba(34,197,94,0.12);
+    padding:20px;
+    border-radius:15px;
+}
+
+.source-card{
+    background:rgba(255,255,255,0.08);
+    padding:15px;
+    border-radius:15px;
+    margin-top:10px;
+    border:1px solid rgba(255,255,255,0.1);
+}
+
+/* Input Box */
+
+.input-box{
+    display:flex;
+    gap:10px;
+}
+
+.input-box input{
+    flex:1;
+}
+
+/* Loading Animation */
+
+.typing{
+    display:flex;
+    gap:6px;
+    margin-top:10px;
+    justify-content:center;
+}
+
+.typing span{
+    width:10px;
+    height:10px;
+    background:#22d3ee;
+    border-radius:50%;
+    animation:bounce 0.6s infinite alternate;
+}
+
+.typing span:nth-child(2){
+    animation-delay:0.2s;
+}
+
+.typing span:nth-child(3){
+    animation-delay:0.4s;
+}
+
+@keyframes bounce{
+    to{
+        transform:translateY(-8px);
+    }
+}
+
+/* Upload Status */
+
+#uploadStatus{
+    margin-top:15px;
+    color:#22c55e;
+    font-weight:bold;
+}
+
+/* Light Mode */
+
+.light-mode{
+    background:white !important;
+    color:black !important;
+}
+
+.light-mode .card{
+    background:#f1f5f9 !important;
+    color:black !important;
+}
+
+.light-mode .chat-box{
+    background:#e2e8f0 !important;
+}
+
+.light-mode .response-box{
+    background:#dbeafe !important;
+    color:black !important;
+}
+
+.light-mode .source-box{
+    background:#dcfce7 !important;
+    color:black !important;
+}
+
+.light-mode input{
+    background:white !important;
+    color:black !important;
+}
+
+.light-mode .navbar{
+    background:#e2e8f0 !important;
+}
+
+.light-mode .navbar h2{
+    color:black !important;
+}
+
+.light-mode .source-card{
+    background:white !important;
+    color:black !important;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- Navbar -->
+
+<div class="navbar">
+
+    <h2>DocuMind Enterprise</h2>
+
+    <div>
+        <button onclick="toggleTheme()" id="themeBtn">
+            🌙
+        </button>
+        <button onclick="logout()" id="logoutBtn">
+            Logout
+        </button>
+    </div>
+
+</div>
+
+<!-- Main Container -->
+
+<div class="container">
+
+    <!-- Header -->
+
+    <div class="header">
+
+        <h1>DocuMind Enterprise</h1>
+
+        <p>
+            Context-Aware Corporate Brain
+            (RAG-Based SOP Assistant)
+        </p>
+
+    </div>
+
+    <!-- Main Grid -->
+
+    <div class="main">
+
+        <!-- Upload Section -->
+
+        <div class="card">
+
+            <h2>Upload Documents</h2>
+
+            <div class="upload-box">
+
+                <p>Upload your SOP / Policy PDF</p>
+
+                <input type="file" id="pdfFile">
+
+                <button
+                    class="upload-btn"
+                    onclick="uploadPDF()"
+                >
+                    Upload PDF
+                </button>
+
+                <button onclick="summarizePDF()">
+                    Summarize Document
+                </button>
+
+                <!-- Upload Status -->
+
+                <p id="uploadStatus"></p>
+
+                <!-- Loading -->
+
+                <div
+                    id="loading"
+                    style="display:none;"
+                >
+                    <div class="typing">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Chat Section -->
+
+        <div class="card">
+
+            <h2>Ask Questions</h2>
+
+            <div class="chat-box">
+
+                <!-- Chat History -->
+
+                <div id="chatHistory"></div>
+
+                <!-- Answer -->
+
+                <div class="response-box">
+
+                    <h3>Answer</h3>
+
+                    <p id="answerText">
+                        AI-generated answer will appear here...
+                    </p>
+
+                </div>
+
+                <!-- Sources -->
+
+                <div class="source-box">
+
+                    <h3>Source Citations</h3>
+
+                    <div id="sourceText">
+                        Page numbers and source documents
+                        will appear here...
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Input -->
+
+            <div class="input-box">
+
+                <input
+                    type="text"
+                    id="question"
+                    placeholder="Ask your question..."
+                >
+
+                <button
+                    class="ask-btn"
+                    onclick="askQuestion()"
+                >
+                    Ask
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+/* Upload PDF */
+
+async function uploadPDF() {
+
+    const fileInput =
+        document.getElementById("pdfFile");
+
+    const file = fileInput.files[0];
+
+    if (!file) {
+        alert("Select a PDF first");
+        return;
+    }
+
+    const formData = new FormData();
+
+    formData.append("file", file);
+
+    document.getElementById("loading").style.display =
+        "block";
+
+    const response = await fetch(
+        "http://127.0.0.1:8000/upload",
+        {
+            method: "POST",
+            body: formData
+        }
+    );
+
+    const result = await response.json();
+
+    document.getElementById("loading").style.display =
+        "none";
+
+    document.getElementById("uploadStatus").innerHTML =
+        "✅ PDF Uploaded Successfully";
+}
+
+
+/* Chat History */
+
+let historyHTML = "";
+
+
+/* Ask Question */
+
+async function askQuestion() {
+
+    const question =
+        document.getElementById("question").value;
+
+    if (!question) {
+        alert("Enter question");
+        return;
+    }
+
+    document.getElementById("loading").style.display =
+        "block";
+
+    const response = await fetch(
+        `http://127.0.0.1:8000/ask?query=${question}`
+    );
+
+    if(!response.ok){
+
+        document.getElementById("loading").style.display =
+            "none";
+
+        alert("Server Error");
+
+        return;
+    }
+
+    const result = await response.json();
+
+    // Chat History
+
+    historyHTML += `
+
+        <div class="chat-card">
+
+            <div class="user-msg">
+
+                <strong>🧑 You:</strong>
+
+                <p>${question}</p>
+
+            </div>
+
+            <div class="ai-msg">
+
+                <strong>🤖 AI:</strong>
+
+                <p>${result.answer}</p>
+
+            </div>
+
+        </div>
+
+    `;
+
+    document.getElementById("chatHistory").innerHTML =
+        historyHTML;
+
+    // Auto Scroll
+
+    document.getElementById("chatHistory")
+        .scrollTop =
+    document.getElementById("chatHistory")
+        .scrollHeight;
+
+    // Main Answer
+
+    document.getElementById("answerText").innerText =
+        result.answer;
+
+    // Source Cards
+
+    let sourceHTML = "";
+
+    result.sources.forEach(src => {
+
+        sourceHTML += `
+
+            <div class="source-card">
+
+                <h4>📄 ${src.source}</h4>
+
+                <p>Page: ${src.page}</p>
+
+            </div>
+
+        `;
+
+    });
+
+    document.getElementById("sourceText").innerHTML =
+        sourceHTML;
+
+    document.getElementById("loading").style.display =
+        "none";
+
+    // Clear Input
+
+    document.getElementById("question").value = "";
+
+}
+
+
+/* Summarize PDF */
+
+async function summarizePDF() {
+
+    document.getElementById("loading").style.display =
+        "block";
+
+    const response = await fetch(
+        "http://127.0.0.1:8000/ask?query=Summarize this document"
+    );
+
+    const result = await response.json();
+
+    document.getElementById("answerText").innerText =
+        result.answer;
+
+    document.getElementById("loading").style.display =
+        "none";
+}
+
+
+/* Enter Key Support */
+
+document.getElementById("question")
+.addEventListener("keypress", function(event){
+
+    if(event.key === "Enter"){
+        askQuestion();
+    }
+
+});
+
+
+/* Theme Toggle */
+
+function toggleTheme(){
+
+    document.body.classList.toggle("light-mode");
+
+    const btn =
+        document.getElementById("themeBtn");
+
+    if(document.body.classList.contains("light-mode")){
+
+        btn.innerHTML = "☀️";
+
+    }
+    else{
+
+        btn.innerHTML = "🌙";
+
+    }
+
+}
+
+function logout(){
+    localStorage.removeItem("loggedIn");
+    window.location.href = "login.html";
+}
+
+</script>
+
+</body>
+</html>

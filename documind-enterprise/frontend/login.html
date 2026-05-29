@@ -1,0 +1,420 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DocuMind Login</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Arial, sans-serif;
+    background:linear-gradient(135deg,#0f172a,#1e3a8a,#0f172a);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    color:white;
+    overflow:hidden;
+}
+
+/* Background Glow */
+
+body::before{
+    content:"";
+    position:absolute;
+    width:500px;
+    height:500px;
+    background:#22d3ee;
+    filter:blur(180px);
+    opacity:0.15;
+    top:-100px;
+    left:-100px;
+}
+
+/* Container */
+
+.auth-container{
+    width:400px;
+    background:rgba(255,255,255,0.08);
+    backdrop-filter:blur(20px);
+    padding:40px;
+    border-radius:25px;
+    box-shadow:0 15px 30px rgba(0,0,0,0.3);
+    position:relative;
+    z-index:10;
+    animation:fadeIn 0.6s ease;
+}
+
+@keyframes fadeIn{
+    from{
+        opacity:0;
+        transform:translateY(20px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+/* Logo */
+
+.logo{
+    text-align:center;
+    margin-bottom:30px;
+}
+
+.logo h1{
+    font-size:42px;
+    background:linear-gradient(to right,#60a5fa,#22d3ee);
+    background-clip:text;
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.logo p{
+    color:#cbd5e1;
+    margin-top:10px;
+}
+
+/* Tabs */
+
+.tabs{
+    display:flex;
+    margin-bottom:25px;
+    background:rgba(255,255,255,0.05);
+    border-radius:12px;
+    overflow:hidden;
+}
+
+.tab-btn{
+    flex:1;
+    padding:12px;
+    border:none;
+    background:transparent;
+    color:white;
+    cursor:pointer;
+    font-size:16px;
+    transition:0.3s;
+}
+
+.tab-btn:hover{
+    background:rgba(255,255,255,0.05);
+}
+
+.active-tab{
+    background:#22d3ee;
+    color:black;
+    font-weight:bold;
+}
+
+/* Forms */
+
+.form{
+    display:none;
+}
+
+.active-form{
+    display:block;
+}
+
+/* Inputs */
+
+input{
+    width:100%;
+    padding:15px;
+    margin-bottom:15px;
+    border:none;
+    border-radius:12px;
+    background:rgba(255,255,255,0.1);
+    color:white;
+    outline:none;
+    transition:0.3s;
+}
+
+input::placeholder{
+    color:#cbd5e1;
+}
+
+input:focus{
+    border:1px solid #22d3ee;
+    box-shadow:0 0 10px rgba(34,211,238,0.4);
+}
+
+/* Button */
+
+.auth-btn{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:12px;
+    background:#22c55e;
+    color:white;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.auth-btn:hover{
+    transform:scale(1.03);
+    background:#16a34a;
+}
+
+/* Footer */
+
+.footer-text{
+    text-align:center;
+    margin-top:20px;
+    color:#cbd5e1;
+    font-size:14px;
+}
+
+/* Responsive */
+
+@media(max-width:500px){
+
+    .auth-container{
+        width:90%;
+        padding:30px;
+    }
+
+    .logo h1{
+        font-size:34px;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="auth-container">
+
+    <!-- Logo -->
+
+    <div class="logo">
+
+        <h1>DocuMind</h1>
+
+        <p>Enterprise AI Assistant</p>
+
+    </div>
+
+    <!-- Tabs -->
+
+    <div class="tabs">
+
+        <button
+            class="tab-btn active-tab"
+            onclick="showLogin()"
+            id="loginTab"
+        >
+            Login
+        </button>
+
+        <button
+            class="tab-btn"
+            onclick="showRegister()"
+            id="registerTab"
+        >
+            Register
+        </button>
+
+    </div>
+
+    <!-- Login Form -->
+
+    <div
+        class="form active-form"
+        id="loginForm"
+    >
+
+        <input
+            type="email"
+            id="loginEmail"
+            placeholder="Enter email"
+        >
+
+        <input
+            type="password"
+            id="loginPassword"
+            placeholder="Enter password"
+        >
+
+        <button
+            class="auth-btn"
+            onclick="loginUser()"
+        >
+            Login
+        </button>
+
+    </div>
+
+    <!-- Register Form -->
+
+    <div
+        class="form"
+        id="registerForm"
+    >
+
+        <input
+            type="text"
+            id="registerName"
+            placeholder="Full name"
+        >
+
+        <input
+            type="email"
+            id="registerEmail"
+            placeholder="Enter email"
+        >
+
+        <input
+            type="password"
+            id="registerPassword"
+            placeholder="Create password"
+        >
+
+        <button
+            class="auth-btn"
+            onclick="registerUser()"
+        >
+            Register
+        </button>
+
+    </div>
+
+    <!-- Footer -->
+
+    <div class="footer-text">
+        Secure AI-Powered Enterprise Platform
+    </div>
+
+</div>
+
+<script>
+
+/* Show Login */
+
+function showLogin(){
+
+    document.getElementById("loginForm")
+        .classList.add("active-form");
+
+    document.getElementById("registerForm")
+        .classList.remove("active-form");
+
+    document.getElementById("loginTab")
+        .classList.add("active-tab");
+
+    document.getElementById("registerTab")
+        .classList.remove("active-tab");
+
+}
+
+
+/* Show Register */
+
+function showRegister(){
+
+    document.getElementById("registerForm")
+        .classList.add("active-form");
+
+    document.getElementById("loginForm")
+        .classList.remove("active-form");
+
+    document.getElementById("registerTab")
+        .classList.add("active-tab");
+
+    document.getElementById("loginTab")
+        .classList.remove("active-tab");
+
+}
+
+
+/* Login */
+
+function loginUser(){
+
+    const email =
+        document.getElementById("loginEmail").value;
+
+    const password =
+        document.getElementById("loginPassword").value;
+
+    if(!email || !password){
+
+        alert("Please fill all fields");
+
+        return;
+    }
+
+    localStorage.setItem("loggedIn", "true");
+    alert("Login Successful");
+
+    window.location.href = "index.html";
+
+}
+
+
+/* Register */
+
+function registerUser(){
+
+    const name =
+        document.getElementById("registerName").value;
+
+    const email =
+        document.getElementById("registerEmail").value;
+
+    const password =
+        document.getElementById("registerPassword").value;
+
+    if(!name || !email || !password){
+
+        alert("Please fill all fields");
+
+        return;
+    }
+
+    alert("Registration Successful");
+
+    showLogin();
+
+}
+
+
+/* Enter Key Support */
+
+document.addEventListener("keypress", function(event){
+
+    if(event.key === "Enter"){
+
+        if(
+            document.getElementById("loginForm")
+            .classList.contains("active-form")
+        ){
+            loginUser();
+        }
+        else{
+            registerUser();
+        }
+
+    }
+
+});
+
+</script>
+
+</body>
+</html>
+```
